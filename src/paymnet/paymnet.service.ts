@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 export class PaymnetService {
   private stripe = new Stripe(envs.api_key_stripe);
   // private endpointSecret = "whsec_940ec8582d3455f444204d6b0ea1af4e5780b6e5c62d22fd729eb763df91a8c7";
-  private endpointSecret = "whsec_n5nmREiZUNu82b2kuye2EJVkclwWTQla"
+  private endpointSecret = envs.secrete_endpoint_webhook_key
 
   createSession(createPaymnetDto: CreatePaymnetDto) {
     const {currency, items} = createPaymnetDto;
@@ -33,8 +33,8 @@ export class PaymnetService {
       setup_intent_data: {
         metadata:{}
       },
-      success_url:'http://localhost:3000/payment/success',
-      cancel_url: 'http://localhost:3000/payment/error'
+      success_url: envs.success_url,
+      cancel_url: envs.cancel_url
     })
   }
 
