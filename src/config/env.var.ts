@@ -24,7 +24,7 @@ const {error, value} = Joi.object({
 const vars: Vars = {
     PORT: value.PORT,
     API_KEY_STRIPE: value.API_KEY_STRIPE,
-    NATS_SERVERS: value.NATS_SERVERS.split(','),
+    NATS_SERVERS: value.NATS_SERVERS,
     CANCEL_URL: value.CANCEL_URL,
     SUCCESS_URL: value.SUCCESS_URL,
     SECRET_ENDPOINT_WEBHOOK_KEY:value.SECRET_ENDPOINT_WEBHOOK_KEY
@@ -36,5 +36,5 @@ export const envs = {
     nats_servers: vars.NATS_SERVERS,
     cancel_url: vars.CANCEL_URL,
     success_url: vars.SUCCESS_URL,
-    secrete_endpoint_webhook_key:vars.SECRET_ENDPOINT_WEBHOOK_KEY
+    secret_endpoint_webhook_key:vars.SECRET_ENDPOINT_WEBHOOK_KEY
 }

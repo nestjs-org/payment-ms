@@ -1,17 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreatePaymnetDto } from './dto/create-paymnet.dto';
 import { UpdatePaymnetDto } from './dto/update-paymnet.dto';
 import { Stripe } from "stripe";
 import { envs } from 'src/config/env.var';
 import { Request, Response } from 'express';
+import { NATS_SERVICE } from 'src/config/constants';
+import { ClientProxy } from '@nestjs/microservices';
 @Injectable()
 export class PaymnetService {
   private stripe = new Stripe(envs.api_key_stripe);
-  // private endpointSecret = "whsec_940ec8582d3455f444204d6b0ea1af4e5780b6e5c62d22fd729eb763df91a8c7";
-  private endpointSecret = envs.secrete_endpoint_webhook_key
+  private endpointSecret = envs.secret_endpoint_webhook_key;
+  constructor(@Inject(NATS_SERVICE) readonly client: ClientProxy){}
 
   createSession(createPaymnetDto: CreatePaymnetDto) {
-    const {currency, items} = createPaymnetDto;
+    const {currency, items,orderId} = createPaymnetDto;
     const line_items = items.map((item)=>(
       {
         price_data:{
@@ -25,13 +27,13 @@ export class PaymnetService {
       }
     ))
     return this.stripe.checkout.sessions.create({
-      line_items,
+    line_items,
       mode:'payment',
-      phone_number_collection:{
-        enabled: true
-      },
-      setup_intent_data: {
-        metadata:{}
+      payment_intent_data:{
+        metadata:{
+          orderId: orderId
+        },
+
       },
       success_url: envs.success_url,
       cancel_url: envs.cancel_url
@@ -51,10 +53,19 @@ export class PaymnetService {
       res.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
-    if(event.type === 'charge.succeeded'){
-      console.log(event.data.object)
+    switch (event.type) {
+      case 'charge.succeeded':
+        const payload = {
+          stripeReceipt:event.data.object.receipt_url,
+          stripeId:event.data.object.id,
+          orderId:event.data.object.metadata.orderId
+        }
+        this.client.emit('complete.payment.order',payload)
+        break;
+      default:
+        break;
     }
 
-    res.send(event)
+    res.send(sig)
   }
 }

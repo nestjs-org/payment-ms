@@ -2,6 +2,8 @@ import { ArrayMinSize, IsArray, IsNumber, IsPositive, IsString, MinLength, Valid
 import { Type } from "class-transformer";
 export class CreatePaymnetDto {
     @IsString()
+    orderId: string;
+    @IsString()
     currency: string;
     @IsArray()
     @ArrayMinSize(1)

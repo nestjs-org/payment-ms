@@ -13,10 +13,10 @@ async function bootstrap() {
   const microservice = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.NATS,
     options:{
-      servers: envs.nats_servers
+      servers:[envs.nats_servers]
     }
   },
-{inheritAppConfig:true});
+{inheritAppConfig:true,});
   
   await app.startAllMicroservices();
   await app.listen(envs.port);
