@@ -17,7 +17,6 @@ async function bootstrap() {
     }
   },
 {inheritAppConfig:true,});
-  
   await app.startAllMicroservices();
   await app.listen(envs.port);
 }

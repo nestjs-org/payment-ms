@@ -30,7 +30,7 @@ export class PaymnetController {
   async webhooks(
     @Req() req: Request,
     @Res() res: Response){
-      
+      console.log('vino aqui webhook');
     return this.paymnetService.webhooks(req,res)
   }
 }
